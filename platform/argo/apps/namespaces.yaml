@@ -6,7 +6,7 @@ metadata:
 spec:
   project: platform
   source:
-    repoURL: https://github.com/vmaltsev/platform-repo.git
+    repoURL: https://github.com/vmaltsev-tech/platform-repo.git
     path: infra/apps/namespaces
     targetRevision: HEAD
   destination:
