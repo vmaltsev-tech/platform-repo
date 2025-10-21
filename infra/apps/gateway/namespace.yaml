@@ -1,0 +1,5 @@
+# infra/apps/gateway/namespace.yaml
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ingress

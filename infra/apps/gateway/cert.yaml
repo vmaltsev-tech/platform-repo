@@ -1,0 +1,9 @@
+# infra/apps/gateway/cert.yaml
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: platform-cert
+  namespace: ingress
+spec:
+  domains:
+    - app.wminor.xyz # замени на твой host
