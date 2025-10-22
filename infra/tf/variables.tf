@@ -45,6 +45,20 @@ variable "cluster_name" {
   default     = "gke-platform"
 }
 
+variable "master_authorized_networks" {
+  description = "Список CIDR блоков, которым разрешён доступ к control plane"
+  type = list(object({
+    cidr_block   = string
+    display_name = string
+  }))
+  default = [
+    {
+      cidr_block   = "58.29.72.148/32"
+      display_name = "home-ip"
+    }
+  ]
+}
+
 variable "domain_name" {
   description = "Имя DNS зоны (например example.com)"
   type        = string

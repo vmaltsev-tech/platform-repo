@@ -28,6 +28,10 @@ resource "google_container_cluster" "gke" {
     channel = "REGULAR"
   }
 
+  gateway_api_config {
+    channel = "CHANNEL_STANDARD"
+  }
+
   workload_identity_config {
     workload_pool = "${var.project_id}.svc.id.goog"
   }
@@ -42,9 +46,12 @@ resource "google_container_cluster" "gke" {
 
   # Доступ к API только с твоего IP
   master_authorized_networks_config {
-    cidr_blocks {
-      cidr_block   = "58.29.72.148/32"
-      display_name = "home-ip"
+    dynamic "cidr_blocks" {
+      for_each = var.master_authorized_networks
+      content {
+        cidr_block   = cidr_blocks.value.cidr_block
+        display_name = cidr_blocks.value.display_name
+      }
     }
   }
 

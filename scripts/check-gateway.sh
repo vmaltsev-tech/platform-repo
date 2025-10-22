@@ -33,4 +33,16 @@ if [[ -z "$IP" ]]; then
 fi
 
 echo "Probing https://${HOST} via IP ${IP}"
-curl --silent --show-error --fail --resolve "${HOST}:443:${IP}" "https://${HOST}/" | head -n 20
+TMP="$(mktemp)"
+trap 'rm -f "${TMP}"' EXIT
+
+STATUS="$(curl --silent --show-error --resolve "${HOST}:443:${IP}" \
+  --write-out '%{http_code}' --output "${TMP}" "https://${HOST}/")"
+
+if [[ "${STATUS}" != "200" ]]; then
+  echo "Unexpected status code: ${STATUS}" >&2
+  cat "${TMP}" >&2 || true
+  exit 1
+fi
+
+cat "${TMP}"
