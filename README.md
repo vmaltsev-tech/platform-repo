@@ -59,5 +59,25 @@ chmod +x scripts/check-*.sh
 ## Cleanup
 Disable auto-sync in Argo CD if necessary, then run `terraform destroy` from `infra/tf`. Use `terraform force-unlock <id>` if a lock remains in the GCS backend.
 
+## Drift & Updates
+- Run `terraform plan` regularly to detect infrastructure drift; if resources exist but are missing from state, recover them with `terraform import`.
+- Use `argocd app diff <app>` to compare Git vs cluster state when investigating GitOps sync issues.
+- For upgrades (e.g., new cluster versions), update variables or resource arguments, review the plan, and apply during a maintenance window.
+
+## Troubleshooting
+- **State lock stuck:** `terraform force-unlock <lock-id>` and relaunch the command.
+- **Gateway CRDs missing:** ensure `terraform apply` rolled out the `gateway_api_config` change (`kubectl get crd | grep gateway`).
+- **Managed certificate pending:** confirm the DNS A record resolves to the static IP from `terraform output gateway_ip`.
+- **ArgoCD sync loops:** inspect controller logs (`kubectl logs -n argocd deploy/argocd-application-controller`) and pause auto-sync if manual fixes are required.
+
+## Secrets & Access
+- Use Application Default Credentials (`gcloud auth application-default login`) or a service-account key stored in a secure secret manager—never commit credentials.
+- Workload Identity is enabled; bind Kubernetes service accounts to Google service accounts through IAM instead of distributing static keys.
+
+## CI/CD Recommendations
+- Add CI checks for `terraform fmt -check`, `terraform validate`, and `terraform plan`.
+- Publish plan outputs in PRs for review prior to apply.
+- Allow Argo CD to pull from this repository (deploy keys or robot Git user) and rely on auto-sync or pipeline-triggered syncs.
+
 ## Further Details
 See `docs/README.md` for expanded descriptions and operational notes.

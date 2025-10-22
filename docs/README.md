@@ -34,6 +34,15 @@
 2. `./scripts/check-argocd.sh` → ensures `platform-root` is Healthy/Synced.
 3. Optionally view Terraform outputs: `terraform output` (gateway IP, DNS zone, cluster name).
 
+## Ops & Drift Handling
+- Schedule periodic `terraform plan` runs; if a resource has been changed manually, either accept the drift or import/update the Terraform config.
+- Use `terraform state list` to confirm state coverage before migrating backends or performing major changes.
+- Within Argo CD, `argocd app diff` helps review differences before syncing.
+
+## CI/CD Suggestions
+- Add pipelines for `terraform fmt -check`, `terraform validate`, and `terraform plan`.
+- Automate Argo CD sync triggers after successful Terraform apply, or rely on auto-sync with notifications for failures.
+
 ## Cleanup
 - Disable automated sync for managed applications if tearing down.
 - Run `terraform destroy` from `infra/tf/` to remove resources.
