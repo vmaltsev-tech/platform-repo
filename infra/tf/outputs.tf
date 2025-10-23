@@ -32,3 +32,13 @@ output "gateway_ip" {
   description = "Статический внешний IP для HTTPS Gateway"
   value       = google_compute_global_address.gateway_ip.address
 }
+
+output "domain_name" {
+  description = "Доменная зона, управлямая Terraform"
+  value       = var.domain_name
+}
+
+output "host" {
+  description = "Полное доменное имя, обслуживаемое Gateway"
+  value       = var.host
+}

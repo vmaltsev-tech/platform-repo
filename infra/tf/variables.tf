@@ -51,12 +51,6 @@ variable "master_authorized_networks" {
     cidr_block   = string
     display_name = string
   }))
-  default = [
-    {
-      cidr_block   = "58.29.72.148/32"
-      display_name = "home-ip"
-    }
-  ]
 }
 
 variable "domain_name" {

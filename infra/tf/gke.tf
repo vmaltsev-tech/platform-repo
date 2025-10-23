@@ -1,4 +1,5 @@
 resource "google_container_cluster" "gke" {
+  provider = google-beta
   name     = var.cluster_name
   location = var.zone
 
@@ -61,10 +62,11 @@ resource "google_container_cluster" "gke" {
 
   enable_shielded_nodes = true
   deletion_protection   = false
-  description           = "GKE private cluster (private nodes, public API) доступен только с IP 58.29.72.148"
+  description           = "GKE private cluster with public API limited to master authorized networks"
 }
 
 resource "google_container_node_pool" "default" {
+  provider = google-beta
   name     = "np-e2s4"
   location = var.zone
   cluster  = google_container_cluster.gke.name
@@ -77,9 +79,9 @@ resource "google_container_node_pool" "default" {
   node_config {
     machine_type = "e2-standard-4"
 
-    # Меняем тип диска, чтобы не упереться в SSD квоту
-    disk_type       = "pd-balanced" # ← HDD, не тратит SSD_TOTAL_GB квоту
-    disk_size_gb    = 50            # ← уменьшен для экономии квоты
+    # Balanced PD (SSD) helps stay within regional quotas while keeping cost reasonable
+    disk_type       = "pd-balanced"
+    disk_size_gb    = 50
     service_account = google_service_account.gke_nodes.email
 
     oauth_scopes = ["https://www.googleapis.com/auth/cloud-platform"]

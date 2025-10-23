@@ -15,9 +15,15 @@ This repository contains Terraform code, Kubernetes manifests, and GitOps config
 - kubectl
 - Argo CD CLI (optional but recommended)
 
-Authenticate against GCP (`gcloud auth login` or service-account key) and set the project `cnp-1760771836`.
+Authenticate against GCP (`gcloud auth login` or service-account key) and set your working project (e.g. `gcloud config set project <your-gcp-project-id>`).
 
 ## Deploying Infrastructure
+Create a working `terraform.tfvars` based on the example and adjust values for your project:
+```bash
+cp infra/tf/terraform.tfvars.example infra/tf/terraform.tfvars
+# edit infra/tf/terraform.tfvars (project_id, domain_name, host, master_authorized_networks, etc.)
+```
+
 ```bash
 cd infra/tf
 terraform init
@@ -28,10 +34,21 @@ State is stored in bucket `tf-state-platform-vm` (prefix `gke-platform`). Defaul
 ```bash
 gcloud container clusters get-credentials gke-platform \
   --region us-central1 \
-  --project cnp-1760771836
+  --project <your-gcp-project-id>
+```
+
+Sync Kubernetes manifests with the configured host (runs off Terraform output if no argument is supplied):
+```bash
+./scripts/sync-gateway-host.sh
 ```
 
 ## Bootstrapping GitOps
+If you use a different Git remote, align the Argo manifests before applying:
+```bash
+./scripts/update-argocd-repo.sh https://github.com/your-org/platform-repo.git
+# or omit the argument to reuse the current git remote
+```
+
 1. Ensure Argo CD is installed in the cluster (e.g. namespace `argocd`).
 2. Apply bootstrap manifests:
    ```bash
@@ -53,7 +70,7 @@ Make helper scripts executable once:
 chmod +x scripts/check-*.sh
 ```
 
-- `./scripts/check-gateway.sh app.wminor.xyz` – validates HTTPS entrypoint (uses Terraform output IP by default, expects HTTP 200).
+- `./scripts/check-gateway.sh` – validates HTTPS entrypoint (defaults to Terraform outputs for host/IP, expects HTTP 200).
 - `./scripts/check-argocd.sh [app]` – waits until an Argo CD application is Healthy/Synced.
 
 ## Cleanup
