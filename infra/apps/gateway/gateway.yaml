@@ -15,10 +15,8 @@ spec:
       port: 443
       tls:
         mode: Terminate
-        certificateRefs:
-          - group: networking.gke.io
-            kind: ManagedCertificate
-            name: platform-cert
+        options:
+          networking.gke.io/managed-certificates: platform-cert
       allowedRoutes:
         namespaces:
           from: All
