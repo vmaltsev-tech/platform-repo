@@ -6,4 +6,4 @@ metadata:
   namespace: ingress
 spec:
   domains:
-    - app.example.com # замените на ваш host
+    - app.wminor.xyz

@@ -8,7 +8,7 @@ spec:
     - name: external-gw
       namespace: ingress
   hostnames:
-    - app.example.com
+    - app.wminor.xyz
   rules:
     - matches:
         - path:
