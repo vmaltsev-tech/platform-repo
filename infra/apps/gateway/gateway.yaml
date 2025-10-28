@@ -1,11 +1,9 @@
-# infra/apps/gateway/gateway.yaml
 apiVersion: gateway.networking.k8s.io/v1
 kind: Gateway
 metadata:
   name: external-gw
   namespace: ingress
   annotations:
-    networking.gke.io/managed-certificates: platform-cert
     networking.gke.io/static-ip-address: platform-gateway-ip
 spec:
   gatewayClassName: gke-l7-global-external-managed
@@ -15,8 +13,10 @@ spec:
       port: 443
       tls:
         mode: Terminate
-        options:
-          networking.gke.io/managed-certificates: platform-cert
+        certificateRefs:
+          - group: networking.gke.io
+            kind: Certificate
+            name: platform-cert
       allowedRoutes:
         namespaces:
           from: All
